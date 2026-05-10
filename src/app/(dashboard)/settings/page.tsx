@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   User as UserIcon,
@@ -28,9 +28,24 @@ import { PLANS } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { TonePreference } from '@/types/database';
 
+/** Sous-composant isolé pour useSearchParams — doit être dans Suspense. */
+function StripeReturnNotifier() {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const upgrade = searchParams.get('upgrade');
+    if (upgrade === 'success') {
+      toast.success('Bienvenue sur le plan Pro ! 🎉 Tes accès sont actifs.');
+    } else if (upgrade === 'cancelled') {
+      toast('Paiement annulé. Tu peux réessayer à tout moment.', { icon: '💡' });
+    }
+  }, [searchParams]);
+
+  return null;
+}
+
 export default function SettingsPage() {
   const { user, profile, loading, updateProfile } = useUser();
-  const searchParams = useSearchParams();
 
   const [fullName, setFullName] = useState('');
   const [tone, setTone] = useState<TonePreference>('balanced');
@@ -45,16 +60,6 @@ export default function SettingsPage() {
       setLanguage(profile.language);
     }
   }, [profile]);
-
-  // Affiche un toast selon le retour Stripe
-  useEffect(() => {
-    const upgrade = searchParams.get('upgrade');
-    if (upgrade === 'success') {
-      toast.success('Bienvenue sur le plan Pro ! 🎉 Tes accès sont actifs.');
-    } else if (upgrade === 'cancelled') {
-      toast('Paiement annulé. Tu peux réessayer à tout moment.', { icon: '💡' });
-    }
-  }, [searchParams]);
 
   const isDirty =
     profile &&
@@ -148,6 +153,11 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Notifier Stripe — isolé dans Suspense pour éviter l'erreur prerender */}
+      <Suspense fallback={null}>
+        <StripeReturnNotifier />
+      </Suspense>
+
       {/* Header */}
       <header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
