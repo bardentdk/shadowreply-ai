@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, History, Settings, X, PenLine, Sparkles } from 'lucide-react';
+import { LayoutDashboard, History, Settings, X, PenLine, Sparkles, ScanText, BookOpen, BarChart2 } from 'lucide-react';
 import { Logo } from '@/components/shared/logo';
 import { UsageIndicator } from './usage-indicator';
 import { cn } from '@/lib/utils';
@@ -23,15 +23,33 @@ const NAV_ITEMS = [
     proOnly: false,
   },
   {
+    href: '/analyze',
+    label: 'Analyser',
+    icon: ScanText,
+    proOnly: false,
+  },
+  {
     href: '/reformulate',
     label: 'Reformuler',
     icon: PenLine,
     proOnly: true,
   },
   {
+    href: '/templates',
+    label: 'Templates',
+    icon: BookOpen,
+    proOnly: false,
+  },
+  {
     href: '/history',
     label: 'Historique',
     icon: History,
+    proOnly: false,
+  },
+  {
+    href: '/stats',
+    label: 'Statistiques',
+    icon: BarChart2,
     proOnly: false,
   },
   {

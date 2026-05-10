@@ -115,3 +115,23 @@ export const reformulateInputSchema = z.object({
 });
 
 export type ReformulateInput = z.infer<typeof reformulateInputSchema>;
+
+/**
+ * Body de la route POST /api/analyze
+ */
+export const analyzeInputSchema = z.object({
+  message: z
+    .string()
+    .trim()
+    .min(2, 'Le message doit contenir au moins 2 caractères.')
+    .max(5000, 'Le message ne peut pas dépasser 5000 caractères.'),
+  context: z
+    .string()
+    .trim()
+    .max(2000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  language: languageSchema.optional(),
+});
+
+export type AnalyzeInput = z.infer<typeof analyzeInputSchema>;

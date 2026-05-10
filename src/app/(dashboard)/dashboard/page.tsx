@@ -1,22 +1,55 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Wand2 } from 'lucide-react';
 import {
   GenerationForm,
   type GenerationFormData,
+  type GenerationFormInitialValues,
 } from '@/components/dashboard/generation-form';
 import { ResultDisplay } from '@/components/dashboard/result-display';
 import { GenerationLoader } from '@/components/shared/loader';
 import { EmptyState } from '@/components/shared/empty-state';
 import { useGenerate } from '@/hooks/use-generate';
 import { useUsageContext } from '@/hooks/use-usage-context';
+import type { CommunicationMode } from '@/types/database';
+
+/** Lit les params de template dans l'URL et appelle onLoad si présents. */
+function TemplateURLReader({
+  onLoad,
+}: {
+  onLoad: (v: GenerationFormInitialValues) => void;
+}) {
+  const searchParams = useSearchParams();
+  const stableOnLoad = useCallback(onLoad, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const msg = searchParams.get('tpl_msg');
+    if (msg) {
+      stableOnLoad({
+        message: msg,
+        context: searchParams.get('tpl_ctx') ?? '',
+        objective: searchParams.get('tpl_obj') ?? '',
+        mode: (searchParams.get('tpl_mode') as CommunicationMode) || 'dating',
+      });
+    }
+  }, [searchParams, stableOnLoad]);
+
+  return null;
+}
 
 export default function DashboardPage() {
   const { loading, result, error, errorCode, generate, reset } = useGenerate();
   const { usage, setOptimistic, refresh: refreshUsage } = useUsageContext();
   const [formKey, setFormKey] = useState(0);
+  const [initialValues, setInitialValues] = useState<GenerationFormInitialValues>({});
+
+  function handleTemplateLoad(values: GenerationFormInitialValues) {
+    setInitialValues(values);
+    setFormKey((k) => k + 1);
+  }
 
   async function handleGenerate(data: GenerationFormData) {
     reset();
@@ -56,6 +89,11 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8">
+      {/* Lecteur de template URL — isolé dans Suspense */}
+      <Suspense fallback={null}>
+        <TemplateURLReader onLoad={handleTemplateLoad} />
+      </Suspense>
+
       {/* Header */}
       <div>
         <h1 className="text-foreground mb-1 text-2xl font-bold md:text-3xl">
@@ -70,6 +108,7 @@ export default function DashboardPage() {
       {/* Formulaire */}
       <GenerationForm
         key={formKey}
+        initialValues={initialValues}
         onSubmit={handleGenerate}
         loading={loading}
         disabled={quotaExceeded}

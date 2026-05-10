@@ -14,11 +14,19 @@ export interface GenerationFormData {
   mode: CommunicationMode;
 }
 
+export interface GenerationFormInitialValues {
+  message?: string;
+  context?: string;
+  objective?: string;
+  mode?: CommunicationMode;
+}
+
 interface GenerationFormProps {
   onSubmit: (data: GenerationFormData) => void;
   loading: boolean;
   disabled?: boolean;
   disabledReason?: string;
+  initialValues?: GenerationFormInitialValues;
 }
 
 export function GenerationForm({
@@ -26,12 +34,15 @@ export function GenerationForm({
   loading,
   disabled,
   disabledReason,
+  initialValues,
 }: GenerationFormProps) {
-  const [message, setMessage] = useState('');
-  const [context, setContext] = useState('');
-  const [objective, setObjective] = useState('');
-  const [mode, setMode] = useState<CommunicationMode>('dating');
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [message, setMessage] = useState(initialValues?.message ?? '');
+  const [context, setContext] = useState(initialValues?.context ?? '');
+  const [objective, setObjective] = useState(initialValues?.objective ?? '');
+  const [mode, setMode] = useState<CommunicationMode>(initialValues?.mode ?? 'dating');
+  const [showAdvanced, setShowAdvanced] = useState(
+    !!(initialValues?.context || initialValues?.objective)
+  );
   const [errors, setErrors] = useState<{ message?: string }>({});
 
   function handleSubmit(e: FormEvent) {
