@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   User as UserIcon,
   Palette,
@@ -10,6 +11,8 @@ import {
   Save,
   AlertTriangle,
   CheckCircle2,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -27,14 +30,14 @@ import type { TonePreference } from '@/types/database';
 
 export default function SettingsPage() {
   const { user, profile, loading, updateProfile } = useUser();
+  const searchParams = useSearchParams();
 
-  // État local pour formulaire
   const [fullName, setFullName] = useState('');
   const [tone, setTone] = useState<TonePreference>('balanced');
   const [language, setLanguage] = useState<string>('fr');
   const [saving, setSaving] = useState(false);
+  const [stripeLoading, setStripeLoading] = useState(false);
 
-  // Sync l'état local quand le profil arrive
   useEffect(() => {
     if (profile) {
       setFullName(profile.full_name || '');
@@ -43,7 +46,16 @@ export default function SettingsPage() {
     }
   }, [profile]);
 
-  // Détection des modifications
+  // Affiche un toast selon le retour Stripe
+  useEffect(() => {
+    const upgrade = searchParams.get('upgrade');
+    if (upgrade === 'success') {
+      toast.success('Bienvenue sur le plan Pro ! 🎉 Tes accès sont actifs.');
+    } else if (upgrade === 'cancelled') {
+      toast('Paiement annulé. Tu peux réessayer à tout moment.', { icon: '💡' });
+    }
+  }, [searchParams]);
+
   const isDirty =
     profile &&
     (fullName.trim() !== (profile.full_name || '') ||
@@ -52,12 +64,10 @@ export default function SettingsPage() {
 
   async function handleSave() {
     if (!isDirty || saving) return;
-
     if (!fullName.trim()) {
       toast.error('Le nom ne peut pas être vide.');
       return;
     }
-
     setSaving(true);
     try {
       await updateProfile({
@@ -73,6 +83,40 @@ export default function SettingsPage() {
     }
   }
 
+  const handleUpgrade = useCallback(async () => {
+    setStripeLoading(true);
+    try {
+      const res = await fetch('/api/stripe/checkout', { method: 'POST' });
+      const json = await res.json();
+      if (!json.success || !json.data?.url) {
+        toast.error(json.error?.message || 'Impossible de démarrer le paiement.');
+        return;
+      }
+      window.location.href = json.data.url;
+    } catch {
+      toast.error('Erreur réseau. Réessaie.');
+    } finally {
+      setStripeLoading(false);
+    }
+  }, []);
+
+  const handlePortal = useCallback(async () => {
+    setStripeLoading(true);
+    try {
+      const res = await fetch('/api/stripe/portal', { method: 'POST' });
+      const json = await res.json();
+      if (!json.success || !json.data?.url) {
+        toast.error(json.error?.message || 'Impossible d\'ouvrir le portail.');
+        return;
+      }
+      window.location.href = json.data.url;
+    } catch {
+      toast.error('Erreur réseau. Réessaie.');
+    } finally {
+      setStripeLoading(false);
+    }
+  }, []);
+
   if (loading) {
     return <SettingsSkeleton />;
   }
@@ -86,12 +130,21 @@ export default function SettingsPage() {
   }
 
   const currentPlan = profile.plan;
+  const isPro = currentPlan === 'pro' || currentPlan === 'enterprise';
   const planDetails =
-    currentPlan === 'pro'
-      ? PLANS.pro
-      : currentPlan === 'enterprise'
-        ? { ...PLANS.pro, name: 'Enterprise', price: 0 }
+    currentPlan === 'enterprise'
+      ? { ...PLANS.enterprise, name: 'Enterprise' }
+      : isPro
+        ? PLANS.pro
         : PLANS.free;
+
+  const subscriptionEnd = profile.subscription_current_period_end
+    ? new Date(profile.subscription_current_period_end).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    : null;
 
   return (
     <div className="space-y-6">
@@ -108,9 +161,7 @@ export default function SettingsPage() {
 
         {isDirty && (
           <div className="flex items-center gap-2">
-            <span className="text-warning text-xs">
-              Modifications non enregistrées
-            </span>
+            <span className="text-warning text-xs">Modifications non enregistrées</span>
             <span className="bg-warning h-2 w-2 animate-pulse rounded-full" />
           </div>
         )}
@@ -130,7 +181,6 @@ export default function SettingsPage() {
           disabled={saving}
           maxLength={100}
         />
-
         <Input
           label="Email"
           value={user?.email || ''}
@@ -154,14 +204,10 @@ export default function SettingsPage() {
         title="Langue"
         description="Langue dans laquelle l'IA générera tes réponses."
       >
-        <LanguageSelector
-          value={language}
-          onChange={setLanguage}
-          disabled={saving}
-        />
+        <LanguageSelector value={language} onChange={setLanguage} disabled={saving} />
       </SettingsSection>
 
-      {/* Bouton Sauvegarder (sticky en bas pour mobile) */}
+      {/* Bouton Sauvegarder */}
       <div className="bg-background/80 border-border-subtle sticky bottom-0 -mx-4 border-t px-4 py-4 backdrop-blur-xl md:static md:mx-0 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none">
         <Button
           variant="primary"
@@ -190,7 +236,7 @@ export default function SettingsPage() {
               <div
                 className={cn(
                   'flex h-10 w-10 items-center justify-center rounded-xl',
-                  currentPlan === 'free'
+                  !isPro
                     ? 'bg-foreground/10'
                     : 'from-accent-primary to-accent-secondary bg-gradient-to-br'
                 )}
@@ -202,17 +248,25 @@ export default function SettingsPage() {
                   <h3 className="text-foreground text-base font-semibold">
                     Plan {planDetails.name}
                   </h3>
-                  <Badge
-                    variant={currentPlan === 'free' ? 'default' : 'primary'}
-                  >
-                    {currentPlan === 'free' ? 'Gratuit' : 'Actif'}
+                  <Badge variant={!isPro ? 'default' : 'primary'}>
+                    {!isPro ? 'Gratuit' : 'Actif'}
                   </Badge>
+                  {profile.subscription_status === 'past_due' && (
+                    <Badge variant="default" className="border-warning/30 text-warning bg-warning/10">
+                      Paiement en attente
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-foreground-muted text-xs">
                   {planDetails.dailyGenerations === 999
                     ? 'Générations illimitées'
                     : `${planDetails.dailyGenerations} générations / jour`}
                 </p>
+                {subscriptionEnd && (
+                  <p className="text-foreground-subtle mt-0.5 text-xs">
+                    Renouvellement le {subscriptionEnd}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -229,26 +283,57 @@ export default function SettingsPage() {
             ))}
           </ul>
 
-          {currentPlan === 'free' && (
+          {/* Upgrade vers Pro (plan Free) */}
+          {!isPro && (
             <div className="border-accent-primary/30 from-accent-primary/10 to-accent-secondary/10 rounded-xl border bg-gradient-to-br p-4">
               <h4 className="text-foreground mb-1 flex items-center gap-1.5 text-sm font-semibold">
                 <Sparkles className="text-accent-primary h-3.5 w-3.5" />
-                Passer au plan Pro
+                Passer au plan Pro — 9,99 € / mois
               </h4>
               <p className="text-foreground-muted mb-3 text-xs">
-                Générations illimitées, historique sans limite, styles
-                personnalisés et bien plus.
+                Générations illimitées, reformulateur IA, historique sans limite et bien plus.
               </p>
               <Button
                 variant="primary"
                 size="sm"
-                disabled
-                className="cursor-not-allowed opacity-70"
-                title="Stripe sera bientôt disponible"
+                onClick={handleUpgrade}
+                disabled={stripeLoading}
               >
-                Bientôt disponible
+                {stripeLoading ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Redirection...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Passer Pro maintenant
+                  </>
+                )}
               </Button>
             </div>
+          )}
+
+          {/* Portail de gestion (plan Pro actif) */}
+          {isPro && currentPlan !== 'enterprise' && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handlePortal}
+              disabled={stripeLoading}
+            >
+              {stripeLoading ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Redirection...
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Gérer mon abonnement
+                </>
+              )}
+            </Button>
           )}
         </div>
       </SettingsSection>
@@ -264,18 +349,14 @@ export default function SettingsPage() {
             href="/dashboard"
             className="glass glass-hover flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all"
           >
-            <span className="text-foreground-muted">
-              Retour au dashboard
-            </span>
+            <span className="text-foreground-muted">Retour au dashboard</span>
             <span className="text-foreground-subtle">→</span>
           </Link>
 
           <button
             type="button"
             onClick={() =>
-              toast('La suppression de compte sera bientôt disponible.', {
-                icon: '🛠️',
-              })
+              toast('La suppression de compte sera bientôt disponible.', { icon: '🛠️' })
             }
             className="hover:bg-danger/5 flex w-full items-center justify-between rounded-xl border border-transparent px-4 py-3 text-left text-sm transition-all"
           >

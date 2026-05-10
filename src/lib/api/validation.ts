@@ -89,3 +89,29 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+
+/**
+ * Body de la route POST /api/reformulate
+ */
+export const reformulateInputSchema = z.object({
+  draft: z
+    .string()
+    .trim()
+    .min(5, 'Le brouillon doit contenir au moins 5 caractères.')
+    .max(3000, 'Le brouillon ne peut pas dépasser 3000 caractères.'),
+  objective: z
+    .string()
+    .trim()
+    .max(500)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  context: z
+    .string()
+    .trim()
+    .max(1000)
+    .optional()
+    .or(z.literal('').transform(() => undefined)),
+  language: languageSchema.optional(),
+});
+
+export type ReformulateInput = z.infer<typeof reformulateInputSchema>;

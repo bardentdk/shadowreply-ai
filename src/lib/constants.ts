@@ -117,10 +117,22 @@ export const PLANS = {
     features: [
       'Générations illimitées',
       'Historique illimité',
+      'Reformulateur de brouillon IA',
       'Styles personnalisés',
       'Templates favoris',
-      'Export PDF',
       'Priorité support',
+    ],
+  },
+  enterprise: {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: 0,
+    dailyGenerations: 999,
+    features: [
+      'Tout le plan Pro',
+      'Accès équipe multi-utilisateurs',
+      'Statistiques avancées',
+      'Support dédié',
     ],
   },
 } as const;
@@ -143,5 +155,6 @@ export const ROUTES = {
   register: '/register',
   dashboard: '/dashboard',
   history: '/history',
+  reformulate: '/reformulate',
   settings: '/settings',
 } as const;
