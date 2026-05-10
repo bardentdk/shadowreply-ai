@@ -3,7 +3,8 @@ import { getAuthenticatedUser } from '@/lib/api/auth';
 import { apiError, apiSuccess } from '@/lib/api/responses';
 import { checkRateLimit } from '@/lib/api/rate-limit';
 import { reformulateInputSchema } from '@/lib/api/validation';
-import { reformulateDraft, AIError } from '@/lib/ai/reformulate';
+import { reformulateDraft } from '@/lib/ai/reformulate';
+import { AIError } from '@/lib/ai';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
