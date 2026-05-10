@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Wand2, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,7 +25,7 @@ export function ReformulateForm({ onSubmit, loading }: ReformulateFormProps) {
 
   const canSubmit = draft.trim().length >= 5 && !loading;
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
     onSubmit({ draft: draft.trim(), objective: objective.trim(), context: context.trim() });

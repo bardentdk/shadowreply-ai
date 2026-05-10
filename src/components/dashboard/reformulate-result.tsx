@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Copy, Check, TrendingUp, Lightbulb, AlertCircle, CheckCircle2, Zap, AlignLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
@@ -10,7 +10,7 @@ interface ReformulateResultProps {
   result: ReformulateResult;
 }
 
-const STYLE_CONFIG: Record<string, { icon: React.ReactNode; color: string }> = {
+const STYLE_CONFIG: Record<string, { icon: ReactNode; color: string }> = {
   polished: {
     icon: <Lightbulb className="h-4 w-4" />,
     color: 'text-accent-tertiary border-accent-tertiary/30 bg-accent-tertiary/5',

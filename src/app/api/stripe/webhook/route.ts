@@ -77,8 +77,12 @@ export async function POST(req: NextRequest) {
         }
 
         const isActive = sub.status === 'active' || sub.status === 'trialing';
-        const periodEnd = sub.current_period_end
-          ? new Date(sub.current_period_end * 1000).toISOString()
+        // current_period_end was moved to subscription items in Stripe API 2024-11-20+
+        const rawPeriodEnd =
+          (sub as unknown as Record<string, number | undefined>)['current_period_end'] ??
+          sub.items?.data?.[0]?.current_period_end;
+        const periodEnd = rawPeriodEnd
+          ? new Date(rawPeriodEnd * 1000).toISOString()
           : null;
 
         const { error } = await supabase
