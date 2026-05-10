@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, History, Settings, X } from 'lucide-react';
+import { LayoutDashboard, History, Settings, X, PenLine, Sparkles } from 'lucide-react';
 import { Logo } from '@/components/shared/logo';
 import { UsageIndicator } from './usage-indicator';
 import { cn } from '@/lib/utils';
@@ -20,16 +20,25 @@ const NAV_ITEMS = [
     href: '/dashboard',
     label: 'Générer',
     icon: LayoutDashboard,
+    proOnly: false,
+  },
+  {
+    href: '/reformulate',
+    label: 'Reformuler',
+    icon: PenLine,
+    proOnly: true,
   },
   {
     href: '/history',
     label: 'Historique',
     icon: History,
+    proOnly: false,
   },
   {
     href: '/settings',
     label: 'Paramètres',
     icon: Settings,
+    proOnly: false,
   },
 ];
 
@@ -40,6 +49,7 @@ export function Sidebar({
   onMobileClose,
 }: SidebarProps) {
   const pathname = usePathname();
+  const isPro = usage?.plan === 'pro' || usage?.plan === 'enterprise';
 
   return (
     <>
@@ -102,7 +112,10 @@ export function Sidebar({
                     isActive ? 'text-accent-primary' : ''
                   )}
                 />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                {item.proOnly && !isPro && (
+                  <Sparkles className="text-accent-primary h-3 w-3 shrink-0 opacity-70" />
+                )}
               </Link>
             );
           })}

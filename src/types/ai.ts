@@ -65,3 +65,31 @@ export interface IAIProvider {
   name: AIProvider;
   generate(input: AIGenerationInput): Promise<AIGenerationResponse>;
 }
+
+// ─── Reformulateur ────────────────────────────────────────────────────────────
+
+export type ReformulateStyle = 'polished' | 'impactful' | 'concise';
+
+export interface ReformulateInput {
+  draft: string;
+  objective?: string;
+  context?: string;
+  language?: string;
+}
+
+export interface ReformulateVersion {
+  style: ReformulateStyle;
+  label: string;
+  message: string;
+  change_summary: string;
+  impact_score: number;
+}
+
+export interface ReformulateResult {
+  original_feedback: {
+    strengths: string[];
+    weaknesses: string[];
+    overall_assessment: string;
+  };
+  versions: [ReformulateVersion, ReformulateVersion, ReformulateVersion];
+}
