@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Download, Chrome, Globe, Puzzle, MousePointer, Zap, ScanText, PenLine, Check, Terminal } from 'lucide-react';
+import { Download, Monitor, Globe, Puzzle, MousePointer, Zap, ScanText, Check, Terminal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { Metadata } from 'next';
 
@@ -163,7 +163,7 @@ export default function ExtensionPage() {
         <div className="mb-10">
           <div className="mb-6 flex items-center gap-3">
             <div className="bg-accent-primary/10 rounded-xl p-2.5">
-              <Chrome className="text-accent-primary h-5 w-5" />
+              <Monitor className="text-accent-primary h-5 w-5" />
             </div>
             <div>
               <h2 className="text-foreground text-lg font-bold">Installation Chrome &amp; Edge</h2>
