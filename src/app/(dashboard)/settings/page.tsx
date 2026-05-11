@@ -35,9 +35,9 @@ function StripeReturnNotifier() {
   useEffect(() => {
     const upgrade = searchParams.get('upgrade');
     if (upgrade === 'success') {
-      toast.success('Bienvenue sur le plan Pro ! 🎉 Tes accès sont actifs.');
+      toast.success('Bienvenue sur le plan Pro ! Tes accès sont actifs.');
     } else if (upgrade === 'cancelled') {
-      toast('Paiement annulé. Tu peux réessayer à tout moment.', { icon: '💡' });
+      toast('Paiement annulé. Tu peux réessayer à tout moment.');
     }
   }, [searchParams]);
 

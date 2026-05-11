@@ -142,7 +142,7 @@ export function OnboardingChecklist({ profile, totalGenerations = 0, onComplete 
       <div className="from-accent-primary/15 to-accent-secondary/10 border-accent-primary/30 animate-fade-in mb-6 flex items-center gap-3 rounded-2xl border bg-gradient-to-r px-5 py-4">
         <PartyPopper className="text-accent-primary h-5 w-5 shrink-0" />
         <div className="flex-1">
-          <p className="text-foreground text-sm font-semibold">Félicitations ! Tu as découvert toutes les fonctionnalités 🎉</p>
+          <p className="text-foreground text-sm font-semibold">Félicitations ! Tu as découvert toutes les fonctionnalités.</p>
           <p className="text-foreground-muted text-xs">Tu es maintenant prêt à maîtriser chaque conversation.</p>
         </div>
       </div>

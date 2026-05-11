@@ -23,6 +23,7 @@ export function ModeSelector({ value, onChange, disabled }: ModeSelectorProps) {
       >
         {COMMUNICATION_MODES.map((mode) => {
           const selected = value === mode.id;
+          const Icon = mode.icon;
           return (
             <button
               key={mode.id}
@@ -40,9 +41,20 @@ export function ModeSelector({ value, onChange, disabled }: ModeSelectorProps) {
                 disabled && 'cursor-not-allowed opacity-50'
               )}
             >
-              <span className="text-lg" aria-hidden>
-                {mode.icon}
-              </span>
+              <div
+                className={cn(
+                  'flex h-7 w-7 items-center justify-center rounded-lg',
+                  selected ? 'bg-accent-primary/20' : 'bg-white/5'
+                )}
+                aria-hidden
+              >
+                <Icon
+                  className={cn(
+                    'h-4 w-4',
+                    selected ? 'text-accent-primary' : 'text-foreground-muted'
+                  )}
+                />
+              </div>
               <span
                 className={cn(
                   'text-xs font-medium',

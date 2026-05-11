@@ -27,6 +27,7 @@ export function HistoryCard({
   const [favLoading, setFavLoading] = useState(false);
 
   const mode = COMMUNICATION_MODES.find((m) => m.id === generation.mode);
+  const ModeIcon = mode?.icon;
 
   async function handleConfirmDelete() {
     setDeleting(true);
@@ -70,7 +71,7 @@ export function HistoryCard({
           <div className="flex flex-wrap items-center gap-2">
             {mode && (
               <Badge variant="primary" size="sm">
-                <span aria-hidden>{mode.icon}</span>
+                {ModeIcon && <ModeIcon aria-hidden className="h-3 w-3" />}
                 {mode.label}
               </Badge>
             )}

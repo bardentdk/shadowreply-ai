@@ -55,7 +55,7 @@ export function HistoryFilters({
             <option value="">Tous les modes</option>
             {COMMUNICATION_MODES.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.icon} {m.label}
+                {m.label}
               </option>
             ))}
           </Select>
