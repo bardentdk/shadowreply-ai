@@ -17,13 +17,13 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: 'sr-generate',
       parentId: 'sr-root',
-      title: '⚡ Générer des réponses',
+      title: '⚡ Générer des réponses (inline)',
       contexts: ['selection'],
     });
     chrome.contextMenus.create({
-      id: 'sr-reformulate',
+      id: 'sr-generate-app',
       parentId: 'sr-root',
-      title: '✍️ Reformuler ce texte',
+      title: '↗ Ouvrir dans l\'application',
       contexts: ['selection'],
     });
   });
@@ -33,21 +33,59 @@ chrome.contextMenus.onClicked.addListener((info) => {
   const text = info.selectionText?.trim() || '';
   const encoded = encodeURIComponent(text);
 
-  const routes = {
-    'sr-analyze': `${APP_URL}/analyze?msg=${encoded}`,
-    'sr-generate': `${APP_URL}/dashboard?tpl_msg=${encoded}`,
-    'sr-reformulate': `${APP_URL}/reformulate?draft=${encoded}`,
-  };
-
-  const url = routes[info.menuItemId];
-  if (url) {
-    chrome.tabs.create({ url });
+  if (info.menuItemId === 'sr-analyze') {
+    chrome.tabs.create({ url: `${APP_URL}/analyze?msg=${encoded}` });
+  } else if (info.menuItemId === 'sr-generate-app') {
+    chrome.tabs.create({ url: `${APP_URL}/dashboard?tpl_msg=${encoded}` });
+  } else if (info.menuItemId === 'sr-generate') {
+    // Store selected text and open popup by opening the extension
+    chrome.storage.session.set({ selectedText: text, autoGenerate: true });
   }
 });
 
-// --- Store selected text for popup ---
-chrome.runtime.onMessage.addListener((msg) => {
+// --- Single message listener (handles all types) ---
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === 'SR_SELECTION') {
     chrome.storage.session.set({ selectedText: msg.text });
+    return false;
+  }
+
+  if (msg.type === 'SR_GENERATE') {
+    const { message, mode, context } = msg.payload;
+    const body = { message, mode };
+    if (context) body.context = context;
+
+    fetch(`${APP_URL}/api/generate`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success && data.data) {
+          sendResponse({
+            replies: data.data.response?.replies ?? [],
+            flagged: data.data.response?.flagged ?? false,
+            usage: data.data.usage ?? null,
+          });
+        } else {
+          const errorCode = data.error?.code ?? '';
+          let errorMsg = data.error?.message ?? 'Erreur lors de la génération.';
+          if (errorCode === 'UNAUTHENTICATED') {
+            errorMsg = 'Tu dois être connecté à shadowreply.ai pour générer des réponses.';
+          } else if (errorCode === 'QUOTA_EXCEEDED') {
+            errorMsg = 'Quota quotidien atteint. Reviens demain ou passe Pro.';
+          }
+          sendResponse({ error: errorMsg, errorCode });
+        }
+      })
+      .catch(() => {
+        sendResponse({
+          error: 'Connexion impossible. Vérifie ta connexion et que tu es connecté sur shadowreply.ai.',
+        });
+      });
+
+    return true; // Keep message channel open for async response
   }
 });
