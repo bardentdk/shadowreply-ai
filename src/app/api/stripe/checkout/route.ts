@@ -69,7 +69,8 @@ export async function POST(_req: NextRequest) {
 
     return apiSuccess({ url: session.url });
   } catch (err) {
-    console.error('[stripe/checkout] Erreur Stripe:', err);
-    return apiError('INTERNAL_ERROR', 'Erreur lors de la création de la session de paiement.');
+    const stripeMsg = err instanceof Error ? err.message : String(err);
+    console.error('[stripe/checkout] Erreur Stripe:', stripeMsg);
+    return apiError('INTERNAL_ERROR', `Erreur Stripe : ${stripeMsg}`);
   }
 }
