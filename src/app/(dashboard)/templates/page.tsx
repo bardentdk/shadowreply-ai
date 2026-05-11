@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { BookOpen, Sparkles, Lock } from 'lucide-react';
+import { BookOpen, Sparkles, Lock, LayoutGrid, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { TemplateCard } from '@/components/dashboard/template-card';
 import { useUser } from '@/hooks/use-user';
@@ -12,9 +12,9 @@ import { COMMUNICATION_MODES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { CommunicationMode } from '@/types/database';
 
-const ALL_MODES = [
-  { id: null, label: 'Tous', icon: '✨' },
-  ...COMMUNICATION_MODES.map((m) => ({ id: m.id as CommunicationMode | null, label: m.label, icon: m.icon })),
+const ALL_MODES: Array<{ id: CommunicationMode | null; label: string; Icon: LucideIcon }> = [
+  { id: null, label: 'Tous', Icon: LayoutGrid },
+  ...COMMUNICATION_MODES.map((m) => ({ id: m.id as CommunicationMode | null, label: m.label, Icon: m.icon })),
 ];
 
 export default function TemplatesPage() {
@@ -83,22 +83,25 @@ export default function TemplatesPage() {
 
       {/* Filtre par mode */}
       <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
-        {ALL_MODES.map((m) => (
-          <button
-            key={String(m.id)}
-            type="button"
-            onClick={() => setActiveMode(m.id as CommunicationMode | null)}
-            className={cn(
-              'flex shrink-0 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-medium transition-all',
-              activeMode === m.id
-                ? 'border-accent-primary/40 bg-accent-primary/10 text-foreground'
-                : 'border-border-subtle text-foreground-muted hover:border-border-accent hover:text-foreground'
-            )}
-          >
-            <span>{m.icon}</span>
-            {m.label}
-          </button>
-        ))}
+        {ALL_MODES.map((m) => {
+          const Icon = m.Icon;
+          return (
+            <button
+              key={String(m.id)}
+              type="button"
+              onClick={() => setActiveMode(m.id as CommunicationMode | null)}
+              className={cn(
+                'flex shrink-0 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-medium transition-all',
+                activeMode === m.id
+                  ? 'border-accent-primary/40 bg-accent-primary/10 text-foreground'
+                  : 'border-border-subtle text-foreground-muted hover:border-border-accent hover:text-foreground'
+              )}
+            >
+              <Icon className="h-3.5 w-3.5 shrink-0" />
+              {m.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Stats */}

@@ -2,6 +2,21 @@
  * Constantes globales de l'application ShadowReply AI.
  */
 
+import {
+  Heart,
+  Briefcase,
+  Scale,
+  Users,
+  Snowflake,
+  RefreshCw,
+  HeartHandshake,
+  Handshake,
+  Waves,
+  Sparkles,
+  Target,
+  type LucideIcon,
+} from 'lucide-react';
+
 export const APP_CONFIG = {
   name: 'ShadowReply AI',
   description: 'Réponses stratégiques générées par IA',
@@ -13,85 +28,104 @@ export const APP_CONFIG = {
  * Modes de communication disponibles.
  * Chaque mode adapte le ton, le vocabulaire et la stratégie de l'IA.
  */
-export const COMMUNICATION_MODES = [
+export type CommunicationModeId =
+  | 'dating'
+  | 'business'
+  | 'conflict'
+  | 'friendly'
+  | 'cold_polite'
+  | 'follow_up'
+  | 'apology'
+  | 'negotiation';
+
+export const COMMUNICATION_MODES: ReadonlyArray<{
+  readonly id: CommunicationModeId;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+}> = [
   {
     id: 'dating',
     label: 'Dating',
     description: 'Romance, séduction, rencontres',
-    icon: '💘',
+    icon: Heart,
   },
   {
     id: 'business',
     label: 'Business',
     description: 'Professionnel, négociation, clients',
-    icon: '💼',
+    icon: Briefcase,
   },
   {
     id: 'conflict',
     label: 'Conflit',
     description: 'Désamorcer une tension',
-    icon: '⚖️',
+    icon: Scale,
   },
   {
     id: 'friendly',
     label: 'Amical',
     description: 'Relations entre amis, famille',
-    icon: '🤝',
+    icon: Users,
   },
   {
     id: 'cold_polite',
     label: 'Froid mais poli',
     description: 'Distance respectueuse',
-    icon: '❄️',
+    icon: Snowflake,
   },
   {
     id: 'follow_up',
     label: 'Relance',
     description: 'Relancer sans paraître insistant',
-    icon: '🔄',
+    icon: RefreshCw,
   },
   {
     id: 'apology',
     label: 'Excuse',
     description: "S'excuser avec sincérité",
-    icon: '🙏',
+    icon: HeartHandshake,
   },
   {
     id: 'negotiation',
     label: 'Négociation',
     description: 'Obtenir un meilleur deal',
-    icon: '💬',
+    icon: Handshake,
   },
-] as const;
-
-export type CommunicationModeId = (typeof COMMUNICATION_MODES)[number]['id'];
+];
 
 /**
  * Styles des 3 réponses générées (toujours dans cet ordre).
  */
-export const REPLY_STYLES = [
+export const REPLY_STYLES: ReadonlyArray<{
+  readonly id: string;
+  label: string;
+  description: string;
+  color: string;
+  icon: LucideIcon;
+}> = [
   {
     id: 'detached',
     label: 'Détaché / Calme',
     description: 'Distance émotionnelle, contrôle',
     color: 'cyan',
-    icon: '🧊',
+    icon: Waves,
   },
   {
     id: 'subtle',
     label: 'Subtil / Charismatique',
     description: 'Influence douce, intelligence',
     color: 'purple',
-    icon: '✨',
+    icon: Sparkles,
   },
   {
     id: 'direct',
     label: 'Direct / Assertif',
     description: 'Clarté, courage, fermeté',
     color: 'blue',
-    icon: '🎯',
+    icon: Target,
   },
-] as const;
+];
 
 /**
  * Plans tarifaires.

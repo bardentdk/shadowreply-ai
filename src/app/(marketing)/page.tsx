@@ -14,6 +14,8 @@ import {
   MessageSquare,
   Star,
   Lock,
+  Snowflake,
+  Target,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { COMMUNICATION_MODES } from '@/lib/constants';
@@ -81,6 +83,24 @@ const HOW_IT_WORKS = [
   },
 ];
 
+const REPLY_DEMO = [
+  {
+    Icon: Snowflake,
+    style: 'Détaché',
+    text: 'Parfait, prenez le temps qu\'il vous faut. Je reste disponible si vous souhaitez affiner certains points.',
+  },
+  {
+    Icon: Sparkles,
+    style: 'Subtil',
+    text: 'Je comprends. Juste pour info, notre offre inclut un accompagnement post-lancement que peu de prestataires proposent.',
+  },
+  {
+    Icon: Target,
+    style: 'Direct',
+    text: 'Quels sont vos critères de décision ? Je peux ajuster notre proposition si nécessaire.',
+  },
+];
+
 const TESTIMONIALS = [
   {
     content:
@@ -108,67 +128,81 @@ const TESTIMONIALS = [
 export default function HomePage() {
   return (
     <div className="bg-mesh">
+
       {/* ── HERO ─────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center px-6 pb-16 pt-32 text-center">
-        <div aria-hidden className="bg-accent-primary/20 pointer-events-none absolute -top-20 left-1/4 h-96 w-96 rounded-full blur-3xl" />
-        <div aria-hidden className="bg-accent-secondary/15 pointer-events-none absolute right-1/4 top-1/2 h-96 w-96 rounded-full blur-3xl" />
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pb-16 pt-32 text-center">
 
-        <div className="border-accent-primary/30 bg-accent-primary/10 text-accent-primary animate-fade-in mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm">
-          <Sparkles className="h-3.5 w-3.5" />
-          Propulsé par IA · 100% privé · RGPD conforme
-        </div>
+        {/* Grayscale background image — place <Image fill className="object-cover grayscale opacity-40" /> inside */}
+        <div className="absolute inset-0 z-0 bg-neutral-950" />
 
-        <h1 className="animate-slide-up mb-6 max-w-4xl text-balance text-5xl font-bold leading-[1.1] sm:text-6xl md:text-7xl">
-          Maîtrise chaque <br />
-          <span className="gradient-text">conversation</span>
-        </h1>
+        {/* Green gradient in foreground */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-accent-primary/30 via-background/65 to-background"
+        />
 
-        <p className="text-foreground-muted animate-slide-up mb-10 max-w-2xl text-balance text-lg sm:text-xl">
-          ShadowReply génère 3 réponses stratégiques pour chaque message.
-          <br />
-          Détaché, charismatique, ou direct — tu choisis ton angle d&apos;attaque.
-        </p>
+        {/* Ambient glows */}
+        <div aria-hidden className="bg-accent-primary/20 pointer-events-none absolute -top-20 left-1/4 z-20 h-96 w-96 rounded-full blur-3xl" />
+        <div aria-hidden className="bg-accent-secondary/15 pointer-events-none absolute right-1/4 top-1/2 z-20 h-96 w-96 rounded-full blur-3xl" />
 
-        <div className="animate-slide-up flex flex-col items-center gap-3 sm:flex-row">
-          <Link href="/register">
-            <Button variant="primary" size="xl" className="min-w-[220px]">
-              Essayer gratuitement
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-          <Link href="/pricing">
-            <Button variant="secondary" size="xl" className="min-w-[220px]">
-              Voir les tarifs
-            </Button>
-          </Link>
-        </div>
-
-        <p className="text-foreground-subtle mt-6 text-sm">
-          5 générations gratuites par jour · Aucune carte bancaire requise
-        </p>
-
-        {/* Demo card */}
-        <div className="animate-fade-in glass-elevated border-border-accent mt-16 w-full max-w-2xl rounded-2xl border p-6 text-left">
-          <p className="text-foreground-muted mb-3 text-xs font-medium uppercase tracking-wider">
-            Exemple de génération — Mode Business
-          </p>
-          <div className="bg-background-elevated mb-4 rounded-xl p-3">
-            <p className="text-foreground-muted text-xs font-medium">Message reçu :</p>
-            <p className="text-foreground mt-1 text-sm italic">
-              &ldquo;On a bien reçu votre proposition mais on a d&apos;autres offres sur la table. On reviendra vers vous.&rdquo;
-            </p>
+        {/* Content */}
+        <div className="relative z-30 flex flex-col items-center">
+          <div className="border-accent-primary/30 bg-accent-primary/10 text-accent-primary animate-fade-in mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-sm">
+            <Sparkles className="h-3.5 w-3.5" />
+            Propulsé par IA · 100% privé · RGPD conforme
           </div>
-          <div className="grid gap-2 sm:grid-cols-3">
-            {[
-              { style: '🧊 Détaché', text: 'Parfait, prenez le temps qu\'il vous faut. Je reste disponible si vous souhaitez affiner certains points.' },
-              { style: '✨ Subtil', text: 'Je comprends. Juste pour info, notre offre inclut un accompagnement post-lancement que peu de prestataires proposent.' },
-              { style: '🎯 Direct', text: 'Quels sont vos critères de décision ? Je peux ajuster notre proposition si nécessaire.' },
-            ].map((r) => (
-              <div key={r.style} className="bg-background rounded-xl p-3">
-                <p className="text-accent-primary mb-1 text-xs font-medium">{r.style}</p>
-                <p className="text-foreground text-xs leading-relaxed">{r.text}</p>
-              </div>
-            ))}
+
+          <h1 className="animate-slide-up mb-6 max-w-4xl text-balance text-5xl font-bold leading-[1.1] sm:text-6xl md:text-7xl">
+            Maîtrise chaque <br />
+            <span className="gradient-text">conversation</span>
+          </h1>
+
+          <p className="text-foreground-muted animate-slide-up mb-10 max-w-2xl text-balance text-lg sm:text-xl">
+            ShadowReply génère 3 réponses stratégiques pour chaque message.
+            <br />
+            Détaché, charismatique, ou direct — tu choisis ton angle d&apos;attaque.
+          </p>
+
+          <div className="animate-slide-up flex flex-col items-center gap-3 sm:flex-row">
+            <Link href="/register">
+              <Button variant="primary" size="xl" className="min-w-[220px]">
+                Essayer gratuitement
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link href="/pricing">
+              <Button variant="secondary" size="xl" className="min-w-[220px]">
+                Voir les tarifs
+              </Button>
+            </Link>
+          </div>
+
+          <p className="text-foreground-subtle mt-6 text-sm">
+            5 générations gratuites par jour · Aucune carte bancaire requise
+          </p>
+
+          {/* Demo card */}
+          <div className="animate-fade-in glass-elevated border-border-accent mt-16 w-full max-w-2xl rounded-2xl border p-6 text-left">
+            <p className="text-foreground-muted mb-3 text-xs font-medium uppercase tracking-wider">
+              Exemple de génération — Mode Business
+            </p>
+            <div className="bg-background-elevated mb-4 rounded-xl p-3">
+              <p className="text-foreground-muted text-xs font-medium">Message reçu :</p>
+              <p className="text-foreground mt-1 text-sm italic">
+                &ldquo;On a bien reçu votre proposition mais on a d&apos;autres offres sur la table. On reviendra vers vous.&rdquo;
+              </p>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {REPLY_DEMO.map((r) => (
+                <div key={r.style} className="bg-background rounded-xl p-3">
+                  <div className="text-accent-primary mb-1.5 flex items-center gap-1.5 text-xs font-medium">
+                    <r.Icon className="h-3.5 w-3.5" />
+                    {r.style}
+                  </div>
+                  <p className="text-foreground text-xs leading-relaxed">{r.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -190,6 +224,11 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── IMAGE SPOT — interface / screenshot ──────────────────────── */}
+      <section className="px-6 pb-4">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl" style={{ aspectRatio: '16/7' }} />
       </section>
 
       {/* ── FONCTIONNALITÉS ──────────────────────────────────────────── */}
@@ -231,16 +270,21 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {COMMUNICATION_MODES.map((mode) => (
-              <div
-                key={mode.id}
-                className="glass-elevated hover:border-accent-primary/30 rounded-2xl border border-transparent p-4 text-center transition-colors"
-              >
-                <div className="mb-2 text-3xl">{mode.icon}</div>
-                <p className="text-foreground mb-1 text-sm font-semibold">{mode.label}</p>
-                <p className="text-foreground-muted text-xs">{mode.description}</p>
-              </div>
-            ))}
+            {COMMUNICATION_MODES.map((mode) => {
+              const Icon = mode.icon;
+              return (
+                <div
+                  key={mode.id}
+                  className="glass-elevated hover:border-accent-primary/30 rounded-2xl border border-transparent p-5 text-center transition-colors"
+                >
+                  <div className="bg-accent-primary/10 mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl">
+                    <Icon className="text-accent-primary h-5 w-5" />
+                  </div>
+                  <p className="text-foreground mb-1 text-sm font-semibold">{mode.label}</p>
+                  <p className="text-foreground-muted text-xs">{mode.description}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -271,6 +315,11 @@ export default function HomePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── IMAGE SPOT — résultats / app en contexte ─────────────────── */}
+      <section className="px-6 pb-4">
+        <div className="mx-auto max-w-5xl overflow-hidden rounded-3xl" style={{ aspectRatio: '21/8' }} />
       </section>
 
       {/* ── TARIFS RÉSUMÉ ────────────────────────────────────────────── */}

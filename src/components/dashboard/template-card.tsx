@@ -1,6 +1,6 @@
 'use client';
 
-import { Lock, ArrowRight } from 'lucide-react';
+import { Lock, ArrowRight, MessageSquare } from 'lucide-react';
 import { COMMUNICATION_MODES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { Template } from '@/lib/templates';
@@ -13,8 +13,10 @@ interface TemplateCardProps {
 
 export function TemplateCard({ template, isPro, onClick }: TemplateCardProps) {
   const isLocked = template.isPro && !isPro;
-  const modeLabel = COMMUNICATION_MODES.find((m) => m.id === template.mode)?.label ?? template.mode;
-  const modeIcon = COMMUNICATION_MODES.find((m) => m.id === template.mode)?.icon ?? '💬';
+  const modeEntry = COMMUNICATION_MODES.find((m) => m.id === template.mode);
+  const modeLabel = modeEntry?.label ?? template.mode;
+  const ModeIcon = modeEntry?.icon ?? MessageSquare;
+  const TemplateIcon = template.icon;
 
   return (
     <button
@@ -35,11 +37,14 @@ export function TemplateCard({ template, isPro, onClick }: TemplateCardProps) {
         </span>
       )}
 
-      {/* Emoji + mode */}
-      <div className="flex items-center gap-2">
-        <span className="text-2xl">{template.emoji}</span>
-        <span className="text-foreground-subtle text-xs">
-          {modeIcon} {modeLabel}
+      {/* Icon + mode */}
+      <div className="flex items-center gap-2.5">
+        <div className="bg-accent-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+          <TemplateIcon className="text-accent-primary h-4 w-4" />
+        </div>
+        <span className="text-foreground-subtle flex items-center gap-1 text-xs">
+          <ModeIcon className="h-3 w-3" />
+          {modeLabel}
         </span>
       </div>
 
