@@ -58,12 +58,13 @@ function ModeDistribution({ data }: { data: Record<string, number> }) {
     <div className="space-y-3">
       {sorted.map(([mode, count]) => {
         const modeInfo = COMMUNICATION_MODES.find((m) => m.id === mode);
+        const ModeIcon = modeInfo?.icon;
         const pct = Math.round((count / total) * 100);
         return (
           <div key={mode}>
             <div className="mb-1 flex items-center justify-between text-xs">
               <span className="text-foreground flex items-center gap-1.5 font-medium">
-                <span>{modeInfo?.icon ?? '📝'}</span>
+                {ModeIcon && <ModeIcon className="h-3.5 w-3.5 shrink-0" />}
                 {modeInfo?.label ?? mode}
               </span>
               <span className="text-foreground-muted">

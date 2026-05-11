@@ -1,4 +1,4 @@
-const APP_URL = 'https://shadowreply.ai';
+const APP_URL = 'https://shadowreply-ai.vercel.app';
 
 // --- Context menus ---
 chrome.runtime.onInstalled.addListener(() => {
@@ -73,7 +73,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           const errorCode = data.error?.code ?? '';
           let errorMsg = data.error?.message ?? 'Erreur lors de la génération.';
           if (errorCode === 'UNAUTHENTICATED') {
-            errorMsg = 'Tu dois être connecté à shadowreply.ai pour générer des réponses.';
+            errorMsg = 'Tu dois être connecté à shadowreply-ai.vercel.app pour générer des réponses.';
           } else if (errorCode === 'QUOTA_EXCEEDED') {
             errorMsg = 'Quota quotidien atteint. Reviens demain ou passe Pro.';
           }
@@ -82,7 +82,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       })
       .catch(() => {
         sendResponse({
-          error: 'Connexion impossible. Vérifie ta connexion et que tu es connecté sur shadowreply.ai.',
+          error: 'Connexion impossible. Vérifie ta connexion et que tu es connecté sur shadowreply-ai.vercel.app.',
         });
       });
 

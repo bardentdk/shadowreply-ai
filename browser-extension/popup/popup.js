@@ -1,4 +1,4 @@
-const APP_URL = 'https://shadowreply.ai';
+const APP_URL = 'https://shadowreply-ai.vercel.app';
 
 let activeTabId = null;
 let currentReplies = [];
