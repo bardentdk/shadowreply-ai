@@ -47,6 +47,7 @@ const INTEREST_CONFIG = {
 function AnalysisResult({ result, isPro }: { result: PartialAnalyzeResult; isPro: boolean }) {
   const interest = INTEREST_CONFIG[result.interest_level as keyof typeof INTEREST_CONFIG] ?? INTEREST_CONFIG.unknown;
   const modeInfo = COMMUNICATION_MODES.find((m) => m.id === result.suggested_mode);
+  const ModeIcon = modeInfo?.icon;
 
   return (
     <div className="animate-fade-in space-y-4">
@@ -91,7 +92,9 @@ function AnalysisResult({ result, isPro }: { result: PartialAnalyzeResult; isPro
             Mode de réponse conseillé
           </p>
           <div className="flex items-center gap-2">
-            <span className="text-2xl">{modeInfo.icon}</span>
+            <div className="bg-accent-primary/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl">
+              {ModeIcon && <ModeIcon className="text-accent-primary h-4 w-4" />}
+            </div>
             <div>
               <p className="text-foreground text-sm font-semibold">{modeInfo.label}</p>
               <p className="text-foreground-muted text-xs">{modeInfo.description}</p>
