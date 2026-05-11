@@ -7,121 +7,194 @@
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
-  <div class="container">
+<div class="container">
 
-    <!-- Header (always visible) -->
-    <div class="header">
-      <div class="logo">
-        <div class="logo-icon">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" stroke="#00674f" stroke-width="2"/>
-            <circle cx="8" cy="12" r="1.5" fill="#00674f"/>
-            <circle cx="12" cy="12" r="1.5" fill="#00674f"/>
-            <circle cx="16" cy="12" r="1.5" fill="#00674f"/>
-          </svg>
-        </div>
-        <span class="logo-text">ShadowReply <span class="accent">AI</span></span>
-      </div>
-      <div id="status-badge" class="status-badge status-free">Gratuit</div>
-    </div>
-
-    <!-- VIEW: Form (default) -->
-    <div id="view-main" class="view">
-
-      <!-- Selected text indicator -->
-      <div id="selection-indicator" class="selection-indicator hidden">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="sel-icon">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14,2 14,8 20,8"/>
-        </svg>
-        <span class="sel-label">Texte sélectionné ·</span>
-        <span id="sel-preview" class="sel-preview"></span>
-        <button id="sel-clear" class="sel-clear" title="Effacer">✕</button>
-      </div>
-
-      <!-- Generation form -->
-      <div class="form-section">
-        <label class="form-label" for="message-input">Message reçu</label>
-        <textarea
-          id="message-input"
-          class="form-textarea"
-          placeholder="Colle ici le message auquel tu veux répondre…"
-          rows="4"
-        ></textarea>
-
-        <label class="form-label" for="mode-select">Mode de communication</label>
-        <select id="mode-select" class="form-select">
-          <option value="dating">Dating</option>
-          <option value="business">Professionnel</option>
-          <option value="friendly" selected>Amical</option>
-          <option value="conflict">Conflit / Tension</option>
-          <option value="cold_polite">Froid mais poli</option>
-          <option value="follow_up">Relance</option>
-          <option value="apology">Excuse</option>
-          <option value="negotiation">Négociation</option>
-        </select>
-
-        <div id="error-banner" class="error-banner hidden"></div>
-
-        <button id="btn-generate" class="btn btn-primary btn-full">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
-          </svg>
-          Générer 3 réponses
-        </button>
-      </div>
-
-      <!-- Footer -->
-      <div class="footer">
-        <a id="open-app" href="#" class="open-app-btn">
-          Ouvrir ShadowReply AI
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15,3 21,3 21,9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-
-    <!-- VIEW: Results -->
-    <div id="view-results" class="view hidden">
-
-      <div class="results-header">
-        <button id="btn-back" class="btn-back">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M19 12H5M12 5l-7 7 7 7"/>
-          </svg>
-          Retour
-        </button>
-        <p class="results-title">3 réponses stratégiques</p>
-      </div>
-
-      <div id="replies-container" class="replies-container"></div>
-
-      <div class="results-hint hidden" id="no-inject-hint">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        Clique dans un champ texte avant d'utiliser "Insérer"
-      </div>
-
-      <!-- Footer -->
-      <div class="footer">
-        <a id="open-app-results" href="#" class="open-app-btn">
-          Voir dans l'application
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            <polyline points="15,3 21,3 21,9"/>
-            <line x1="10" y1="14" x2="21" y2="3"/>
-          </svg>
-        </a>
-      </div>
-    </div>
-
+  <!-- ── VIEW : Chargement (affiché en premier) ── -->
+  <div id="view-loading" class="view view-loading">
+    <svg class="loading-logo" viewBox="0 0 162 162" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M45.2576 34.5465C34.3122 34.5465 21.3897 26.8143 13.1054 9.57727H88.3552C96.2222 9.57727 105.626 12.0273 112.982 18.1284C112.982 18.1284 107.51 19.4966 105.799 20.1806C104.089 20.8647 103.913 21.7609 105.799 22.575C123.331 28.7556 130.964 35.0195 137.61 55.0692C139.248 54.9293 139.808 54.0886 140.688 52.3328C149.581 75.5919 140.004 102.955 115.035 119.716C115.035 119.716 150.265 156.998 151.975 159.051L152.015 159.098C153.69 161.108 153.979 161.455 151.975 161.445H124.954C119.493 161.519 116.85 160.451 112.982 156.314L91.7756 133.397L107.852 117.663L92.8018 102.613C137.61 87.2214 117.519 34.5465 88.3552 34.5465H45.2576Z" fill="url(#lp0)"/>
+      <path d="M138.978 0C138.893 13.2299 135.482 18.0258 121.191 20.1806V22.917C135.158 24.938 138.537 29.6006 139.32 42.0715H142.398C144.041 28.7481 147.593 24.0382 160.869 22.917V20.1806C148.552 18.9503 143.849 15.3901 142.398 0H138.978Z" fill="url(#lp1)"/>
+      <path d="M60.9917 133.739V125.53C49.7577 125.57 43.6098 125.251 32.944 122.794L9.68499 134.423C6.94864 135.792 6.44563 134.896 6.94864 132.713L14.8156 112.533C4.20351 103.002 1.41432 97.6483 0.449744 91.3259C-1.21928 76.7421 1.58678 71.0221 11.7372 61.568C20.1613 54.1497 27.5371 51.6864 47.3099 49.9385C48.9702 50.1826 49.7042 51.3067 48.336 51.9907C46.9679 52.6748 36.6823 56.0723 30.2077 60.5419C19.3558 68.0738 15.1049 73.2358 16.1838 86.8793C18.2361 106.376 41.8372 109.112 44.2315 109.796C50.7769 110.612 54.4463 110.652 60.9917 109.796V101.929C61.0107 99.1552 61.81 99.1046 64.4121 101.245L82.1984 116.295C83.3294 117.43 83.3974 118.037 82.1984 119.031L63.0439 134.924C61.4725 136.184 60.9798 136.022 60.9917 133.739Z" fill="url(#lp2)"/>
+      <circle cx="55.5189" cy="71.1452" r="6.1568" fill="white"/>
+      <circle cx="73.9893" cy="71.1452" r="6.1568" fill="white"/>
+      <circle cx="91.7756" cy="71.1452" r="6.1568" fill="white"/>
+      <defs>
+        <linearGradient id="lp0" x1="83.24" y1="9.58" x2="83.24" y2="161.45" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+        </linearGradient>
+        <linearGradient id="lp1" x1="141.03" y1="0" x2="141.03" y2="42.07" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+        </linearGradient>
+        <linearGradient id="lp2" x1="41.54" y1="49.94" x2="41.54" y2="135.71" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <p class="loading-text">Vérification de la session…</p>
   </div>
-  <script src="popup.js"></script>
+
+  <!-- ── VIEW : Non connecté ── -->
+  <div id="view-auth" class="view hidden">
+    <div class="auth-screen">
+      <svg class="auth-logo" viewBox="0 0 162 162" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M45.2576 34.5465C34.3122 34.5465 21.3897 26.8143 13.1054 9.57727H88.3552C96.2222 9.57727 105.626 12.0273 112.982 18.1284C112.982 18.1284 107.51 19.4966 105.799 20.1806C104.089 20.8647 103.913 21.7609 105.799 22.575C123.331 28.7556 130.964 35.0195 137.61 55.0692C139.248 54.9293 139.808 54.0886 140.688 52.3328C149.581 75.5919 140.004 102.955 115.035 119.716C115.035 119.716 150.265 156.998 151.975 159.051L152.015 159.098C153.69 161.108 153.979 161.455 151.975 161.445H124.954C119.493 161.519 116.85 160.451 112.982 156.314L91.7756 133.397L107.852 117.663L92.8018 102.613C137.61 87.2214 117.519 34.5465 88.3552 34.5465H45.2576Z" fill="url(#ap0)"/>
+        <path d="M138.978 0C138.893 13.2299 135.482 18.0258 121.191 20.1806V22.917C135.158 24.938 138.537 29.6006 139.32 42.0715H142.398C144.041 28.7481 147.593 24.0382 160.869 22.917V20.1806C148.552 18.9503 143.849 15.3901 142.398 0H138.978Z" fill="url(#ap1)"/>
+        <path d="M60.9917 133.739V125.53C49.7577 125.57 43.6098 125.251 32.944 122.794L9.68499 134.423C6.94864 135.792 6.44563 134.896 6.94864 132.713L14.8156 112.533C4.20351 103.002 1.41432 97.6483 0.449744 91.3259C-1.21928 76.7421 1.58678 71.0221 11.7372 61.568C20.1613 54.1497 27.5371 51.6864 47.3099 49.9385C48.9702 50.1826 49.7042 51.3067 48.336 51.9907C46.9679 52.6748 36.6823 56.0723 30.2077 60.5419C19.3558 68.0738 15.1049 73.2358 16.1838 86.8793C18.2361 106.376 41.8372 109.112 44.2315 109.796C50.7769 110.612 54.4463 110.652 60.9917 109.796V101.929C61.0107 99.1552 61.81 99.1046 64.4121 101.245L82.1984 116.295C83.3294 117.43 83.3974 118.037 82.1984 119.031L63.0439 134.924C61.4725 136.184 60.9798 136.022 60.9917 133.739Z" fill="url(#ap2)"/>
+        <circle cx="55.5189" cy="71.1452" r="6.1568" fill="white"/>
+        <circle cx="73.9893" cy="71.1452" r="6.1568" fill="white"/>
+        <circle cx="91.7756" cy="71.1452" r="6.1568" fill="white"/>
+        <defs>
+          <linearGradient id="ap0" x1="83.24" y1="9.58" x2="83.24" y2="161.45" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+          <linearGradient id="ap1" x1="141.03" y1="0" x2="141.03" y2="42.07" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+          <linearGradient id="ap2" x1="41.54" y1="49.94" x2="41.54" y2="135.71" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h2 class="auth-title">ShadowReply</h2>
+      <p class="auth-desc">
+        Connecte-toi à ton compte pour générer des réponses IA directement depuis n'importe quelle page.
+      </p>
+      <button id="btn-login" class="btn btn-primary btn-full">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10,17 15,12 10,7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Se connecter
+      </button>
+      <p class="auth-hint">Ton compte reste actif entre les sessions.</p>
+    </div>
+  </div>
+
+  <!-- ── En-tête partagé (visible quand connecté) ── -->
+  <div id="app-header" class="header hidden">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 162 162" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M45.2576 34.5465C34.3122 34.5465 21.3897 26.8143 13.1054 9.57727H88.3552C96.2222 9.57727 105.626 12.0273 112.982 18.1284C112.982 18.1284 107.51 19.4966 105.799 20.1806C104.089 20.8647 103.913 21.7609 105.799 22.575C123.331 28.7556 130.964 35.0195 137.61 55.0692C139.248 54.9293 139.808 54.0886 140.688 52.3328C149.581 75.5919 140.004 102.955 115.035 119.716C115.035 119.716 150.265 156.998 151.975 159.051L152.015 159.098C153.69 161.108 153.979 161.455 151.975 161.445H124.954C119.493 161.519 116.85 160.451 112.982 156.314L91.7756 133.397L107.852 117.663L92.8018 102.613C137.61 87.2214 117.519 34.5465 88.3552 34.5465H45.2576Z" fill="url(#hp0)"/>
+        <path d="M138.978 0C138.893 13.2299 135.482 18.0258 121.191 20.1806V22.917C135.158 24.938 138.537 29.6006 139.32 42.0715H142.398C144.041 28.7481 147.593 24.0382 160.869 22.917V20.1806C148.552 18.9503 143.849 15.3901 142.398 0H138.978Z" fill="url(#hp1)"/>
+        <path d="M60.9917 133.739V125.53C49.7577 125.57 43.6098 125.251 32.944 122.794L9.68499 134.423C6.94864 135.792 6.44563 134.896 6.94864 132.713L14.8156 112.533C4.20351 103.002 1.41432 97.6483 0.449744 91.3259C-1.21928 76.7421 1.58678 71.0221 11.7372 61.568C20.1613 54.1497 27.5371 51.6864 47.3099 49.9385C48.9702 50.1826 49.7042 51.3067 48.336 51.9907C46.9679 52.6748 36.6823 56.0723 30.2077 60.5419C19.3558 68.0738 15.1049 73.2358 16.1838 86.8793C18.2361 106.376 41.8372 109.112 44.2315 109.796C50.7769 110.612 54.4463 110.652 60.9917 109.796V101.929C61.0107 99.1552 61.81 99.1046 64.4121 101.245L82.1984 116.295C83.3294 117.43 83.3974 118.037 82.1984 119.031L63.0439 134.924C61.4725 136.184 60.9798 136.022 60.9917 133.739Z" fill="url(#hp2)"/>
+        <circle cx="55.5189" cy="71.1452" r="6.1568" fill="white"/>
+        <circle cx="73.9893" cy="71.1452" r="6.1568" fill="white"/>
+        <circle cx="91.7756" cy="71.1452" r="6.1568" fill="white"/>
+        <defs>
+          <linearGradient id="hp0" x1="83.24" y1="9.58" x2="83.24" y2="161.45" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+          <linearGradient id="hp1" x1="141.03" y1="0" x2="141.03" y2="42.07" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+          <linearGradient id="hp2" x1="41.54" y1="49.94" x2="41.54" y2="135.71" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#1E9577"/><stop offset="1" stop-color="#00674F"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-text">Shadow<span class="accent">Reply</span></span>
+    </div>
+    <div id="status-badge" class="status-badge status-free">Gratuit</div>
+  </div>
+
+  <!-- ── VIEW : Formulaire ── -->
+  <div id="view-main" class="view hidden">
+
+    <!-- Texte sélectionné -->
+    <div id="selection-indicator" class="selection-indicator hidden">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="sel-icon">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14,2 14,8 20,8"/>
+      </svg>
+      <span class="sel-label">Sélectionné ·</span>
+      <span id="sel-preview" class="sel-preview"></span>
+      <button id="sel-clear" class="sel-clear" title="Effacer">✕</button>
+    </div>
+
+    <!-- Formulaire -->
+    <div class="form-section">
+      <label class="form-label" for="message-input">Message reçu</label>
+      <textarea
+        id="message-input"
+        class="form-textarea"
+        placeholder="Colle ici le message auquel tu veux répondre…"
+        rows="4"
+      ></textarea>
+
+      <label class="form-label" for="mode-select">Mode de communication</label>
+      <select id="mode-select" class="form-select">
+        <option value="dating">Dating</option>
+        <option value="business">Professionnel</option>
+        <option value="friendly" selected>Amical</option>
+        <option value="conflict">Conflit / Tension</option>
+        <option value="cold_polite">Froid mais poli</option>
+        <option value="follow_up">Relance</option>
+        <option value="apology">Excuse</option>
+        <option value="negotiation">Négociation</option>
+      </select>
+
+      <div id="error-banner" class="error-banner hidden"></div>
+
+      <button id="btn-generate" class="btn btn-primary btn-full">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+        </svg>
+        Générer 3 réponses
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a id="open-app" href="#" class="open-app-btn">
+        Ouvrir l'application
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15,3 21,3 21,9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── VIEW : Résultats ── -->
+  <div id="view-results" class="view hidden">
+
+    <div class="results-header">
+      <button id="btn-back" class="btn-back">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Retour
+      </button>
+      <p class="results-title">3 réponses générées</p>
+    </div>
+
+    <div id="replies-container" class="replies-container"></div>
+
+    <div class="results-hint hidden" id="no-inject-hint">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      Clique dans un champ texte avant d'utiliser "Insérer"
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a id="open-app-results" href="#" class="open-app-btn">
+        Voir dans l'application
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15,3 21,3 21,9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+</div>
+<script src="popup.js"></script>
 </body>
 </html>

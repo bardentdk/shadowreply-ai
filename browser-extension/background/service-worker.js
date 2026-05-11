@@ -1,6 +1,7 @@
 const APP_URL = 'https://shadowreply-ai.vercel.app';
 
-// --- Context menus ---
+// ── Context menus ────────────────────────────────────────────────
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
@@ -11,19 +12,19 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
       id: 'sr-analyze',
       parentId: 'sr-root',
-      title: '🔍 Analyser ce message',
+      title: 'Analyser ce message',
       contexts: ['selection'],
     });
     chrome.contextMenus.create({
       id: 'sr-generate',
       parentId: 'sr-root',
-      title: '⚡ Générer des réponses (inline)',
+      title: 'Générer des réponses (popup)',
       contexts: ['selection'],
     });
     chrome.contextMenus.create({
       id: 'sr-generate-app',
       parentId: 'sr-root',
-      title: '↗ Ouvrir dans l\'application',
+      title: "Ouvrir dans l'application",
       contexts: ['selection'],
     });
   });
@@ -38,18 +39,53 @@ chrome.contextMenus.onClicked.addListener((info) => {
   } else if (info.menuItemId === 'sr-generate-app') {
     chrome.tabs.create({ url: `${APP_URL}/dashboard?tpl_msg=${encoded}` });
   } else if (info.menuItemId === 'sr-generate') {
-    // Store selected text and open popup by opening the extension
-    chrome.storage.session.set({ selectedText: text, autoGenerate: true });
+    // Store text so popup pre-fills the textarea
+    chrome.storage.session.set({ selectedText: text });
   }
 });
 
-// --- Single message listener (handles all types) ---
+// ── Message listener ─────────────────────────────────────────────
+
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+
+  // ── Auth check ──────────────────────────────────────────────
+  if (msg.type === 'SR_CHECK_AUTH') {
+    fetch(`${APP_URL}/api/me`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((r) => {
+        if (!r.ok) {
+          sendResponse({ authed: false });
+          return;
+        }
+        return r.json();
+      })
+      .then((data) => {
+        if (!data) return; // already responded above
+        if (data.success && data.data) {
+          sendResponse({
+            authed: true,
+            plan: data.data.plan ?? 'free',
+            name: data.data.full_name ?? '',
+          });
+        } else {
+          sendResponse({ authed: false });
+        }
+      })
+      .catch(() => sendResponse({ authed: false }));
+
+    return true; // keep channel open for async
+  }
+
+  // ── Text selection from content script ─────────────────────
   if (msg.type === 'SR_SELECTION') {
     chrome.storage.session.set({ selectedText: msg.text });
     return false;
   }
 
+  // ── Generate replies ────────────────────────────────────────
   if (msg.type === 'SR_GENERATE') {
     const { message, mode, context } = msg.payload;
     const body = { message, mode };
@@ -73,7 +109,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
           const errorCode = data.error?.code ?? '';
           let errorMsg = data.error?.message ?? 'Erreur lors de la génération.';
           if (errorCode === 'UNAUTHENTICATED') {
-            errorMsg = 'Tu dois être connecté à shadowreply-ai.vercel.app pour générer des réponses.';
+            errorMsg = 'Session expirée. Reconnecte-toi pour continuer.';
           } else if (errorCode === 'QUOTA_EXCEEDED') {
             errorMsg = 'Quota quotidien atteint. Reviens demain ou passe Pro.';
           }
@@ -82,10 +118,10 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       })
       .catch(() => {
         sendResponse({
-          error: 'Connexion impossible. Vérifie ta connexion et que tu es connecté sur shadowreply-ai.vercel.app.',
+          error: 'Connexion impossible. Vérifie ta connexion internet.',
         });
       });
 
-    return true; // Keep message channel open for async response
+    return true; // keep channel open for async
   }
 });
