@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
+import { CookieConsentProvider } from '@/hooks/use-cookie-consent';
+import { CookieBanner } from '@/components/public/cookie-banner';
 import './globals.css';
 
 const inter = Inter({
@@ -45,7 +47,10 @@ export default function RootLayout({
   return (
     <html lang="fr" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
-        {children}
+        <CookieConsentProvider>
+          {children}
+          <CookieBanner />
+        </CookieConsentProvider>
         <Toaster
           position="top-right"
           toastOptions={{
