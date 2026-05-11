@@ -6,15 +6,14 @@ import { apiError, apiSuccess } from '@/lib/api/responses';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-/**
- * POST /api/stripe/portal
- *
- * Crée une session Stripe Billing Portal pour gérer l'abonnement existant.
- * (Annulation, changement de carte, factures, etc.)
- */
 export async function POST(_req: NextRequest) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+
+  if (!stripeKey) {
+    console.error('[stripe/portal] STRIPE_SECRET_KEY manquant');
+    return apiError('INTERNAL_ERROR', 'Configuration Stripe incomplète.');
+  }
+
   const auth = await getAuthenticatedUser();
   if (!auth) {
     return apiError('UNAUTHENTICATED', 'Tu dois être connecté.');
@@ -25,16 +24,19 @@ export async function POST(_req: NextRequest) {
     return apiError('FORBIDDEN', 'Aucun abonnement Stripe trouvé sur ce compte.');
   }
 
-  if (!process.env.STRIPE_SECRET_KEY) {
-    return apiError('INTERNAL_ERROR', 'Stripe non configuré.');
+  const stripe = new Stripe(stripeKey);
+
+  try {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://airepl.vercel.app';
+
+    const session = await stripe.billingPortal.sessions.create({
+      customer: profile.stripe_customer_id,
+      return_url: `${appUrl}/settings`,
+    });
+
+    return apiSuccess({ url: session.url });
+  } catch (err) {
+    console.error('[stripe/portal] Erreur Stripe:', err);
+    return apiError('INTERNAL_ERROR', "Erreur lors de l'ouverture du portail de facturation.");
   }
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-  const session = await stripe.billingPortal.sessions.create({
-    customer: profile.stripe_customer_id,
-    return_url: `${appUrl}/settings`,
-  });
-
-  return apiSuccess({ url: session.url });
 }

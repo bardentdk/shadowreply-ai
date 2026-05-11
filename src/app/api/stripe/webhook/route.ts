@@ -5,22 +5,15 @@ import { createAdminClient } from '@/lib/supabase/admin';
 
 export const runtime = 'nodejs';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-/**
- * POST /api/stripe/webhook
- *
- * Reçoit les événements Stripe et met à jour les profils en conséquence.
- *
- * Événements gérés :
- *  - checkout.session.completed → active le plan Pro
- *  - customer.subscription.updated → synchronise le statut
- *  - customer.subscription.deleted → rétrograde vers Free
- *  - invoice.payment_failed → marque comme past_due
- *
- * ⚠️ Utilise le raw body pour vérifier la signature Stripe.
- */
 export async function POST(req: NextRequest) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+  if (!stripeKey || !webhookSecret) {
+    console.error('[webhook] Variables Stripe manquantes');
+    return NextResponse.json({ error: 'Configuration incomplète.' }, { status: 500 });
+  }
+
   const body = await req.text();
   const sig = req.headers.get('stripe-signature');
 
@@ -28,11 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Stripe-Signature header manquant.' }, { status: 400 });
   }
 
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    console.error('[webhook] STRIPE_WEBHOOK_SECRET manquant');
-    return NextResponse.json({ error: 'Webhook secret non configuré.' }, { status: 500 });
-  }
+  const stripe = new Stripe(stripeKey);
 
   let event: Stripe.Event;
   try {
@@ -77,7 +66,6 @@ export async function POST(req: NextRequest) {
         }
 
         const isActive = sub.status === 'active' || sub.status === 'trialing';
-        // current_period_end was moved to subscription items in Stripe API 2024-11-20+
         const rawPeriodEnd =
           (sub as unknown as Record<string, number | undefined>)['current_period_end'] ??
           sub.items?.data?.[0]?.current_period_end;
@@ -136,7 +124,6 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        // Événement non géré — ignoré silencieusement
         break;
     }
   } catch (err) {

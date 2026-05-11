@@ -1,4 +1,4 @@
-const APP_URL = 'https://shadowreply-ai.vercel.app';
+const APP_URL = 'https://airepl.vercel.app';
 
 // ── Context menus ────────────────────────────────────────────────
 
