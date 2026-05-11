@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ScanText, Brain, Sparkles, TrendingUp, AlertTriangle, Lightbulb, HelpCircle, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
@@ -14,6 +15,16 @@ import { useUser } from '@/hooks/use-user';
 import { COMMUNICATION_MODES } from '@/lib/constants';
 import { cn } from '@/lib/utils';
 import type { AnalyzeResult } from '@/lib/ai/analyze';
+
+function ExtensionParamReader({ onMessage }: { onMessage: (msg: string) => void }) {
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const msg = searchParams.get('msg');
+    if (msg?.trim()) onMessage(msg.trim());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
+}
 
 type PartialAnalyzeResult = Partial<AnalyzeResult> & {
   detected_tone?: string;
@@ -163,6 +174,11 @@ export default function AnalyzePage() {
   const { profile, loading: profileLoading } = useUser();
   const [message, setMessage] = useState('');
   const [context, setContext] = useState('');
+
+  // Pre-fill from extension URL param (wrapped in Suspense below)
+  const handleExtensionParam = useCallback((msg: string) => {
+    setMessage(msg);
+  }, []);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PartialAnalyzeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -215,6 +231,9 @@ export default function AnalyzePage() {
 
   return (
     <div className="space-y-8">
+      <Suspense fallback={null}>
+        <ExtensionParamReader onMessage={handleExtensionParam} />
+      </Suspense>
       {/* Header */}
       <div>
         <h1 className="text-foreground mb-1 flex items-center gap-2 text-2xl font-bold md:text-3xl">

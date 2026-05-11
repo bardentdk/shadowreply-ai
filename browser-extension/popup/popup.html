@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShadowReply AI</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#00674f" stroke-width="2"/>
+            <circle cx="8" cy="12" r="1.5" fill="#00674f"/>
+            <circle cx="12" cy="12" r="1.5" fill="#00674f"/>
+            <circle cx="16" cy="12" r="1.5" fill="#00674f"/>
+          </svg>
+        </div>
+        <span class="logo-text">ShadowReply <span class="accent">AI</span></span>
+      </div>
+      <div id="status-badge" class="status-badge status-free">Gratuit</div>
+    </div>
+
+    <!-- Selected text action -->
+    <div id="selection-section" class="selection-section hidden">
+      <p class="selection-label">Texte sélectionné</p>
+      <p id="selection-preview" class="selection-preview"></p>
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="btn-analyze">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          Analyser ce message
+        </button>
+        <button class="btn btn-secondary" id="btn-generate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          Générer des réponses
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="quick-actions">
+      <p class="section-title">Actions rapides</p>
+      <div class="action-list">
+        <a class="action-item" data-url="dashboard">
+          <div class="action-icon">⚡</div>
+          <div class="action-info">
+            <p class="action-name">Générer une réponse</p>
+            <p class="action-desc">3 styles stratégiques en 3 secondes</p>
+          </div>
+        </a>
+        <a class="action-item" data-url="analyze">
+          <div class="action-icon">🔍</div>
+          <div class="action-info">
+            <p class="action-name">Analyser un message</p>
+            <p class="action-desc">Décrypter l'intention et le ton</p>
+          </div>
+        </a>
+        <a class="action-item" data-url="reformulate">
+          <div class="action-icon">✍️</div>
+          <div class="action-info">
+            <p class="action-name">Reformuler un brouillon</p>
+            <p class="action-desc">Optimiser ce que tu veux écrire</p>
+          </div>
+        </a>
+        <a class="action-item" data-url="templates">
+          <div class="action-icon">📚</div>
+          <div class="action-info">
+            <p class="action-name">Templates</p>
+            <p class="action-desc">43 scénarios prêts à l'emploi</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <a id="open-app" class="open-app-btn" href="#">
+        Ouvrir ShadowReply AI
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

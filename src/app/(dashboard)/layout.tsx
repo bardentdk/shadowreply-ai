@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { Topbar } from '@/components/dashboard/topbar';
+import { OnboardingChecklist } from '@/components/dashboard/onboarding-checklist';
 import { useUser } from '@/hooks/use-user';
 import { useUsage } from '@/hooks/use-usage';
 import { UsageContext } from '@/hooks/use-usage-context';
@@ -33,7 +34,13 @@ export default function DashboardLayout({
           />
 
           <main className="flex-1 overflow-y-auto p-4 md:p-8">
-            <div className="mx-auto w-full max-w-5xl">{children}</div>
+            <div className="mx-auto w-full max-w-5xl">
+              <OnboardingChecklist
+                profile={profile}
+                totalGenerations={usageState.usage?.current_count ?? 0}
+              />
+              {children}
+            </div>
           </main>
         </div>
       </div>
