@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type ElementType } from 'react';
 import { BarChart2, Star, Zap, Calendar, Clock, TrendingUp, Sparkles, Award } from 'lucide-react';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -30,7 +30,7 @@ function StatCard({
   sub,
   accent,
 }: {
-  icon: React.ElementType;
+  icon: ElementType;
   label: string;
   value: string | number;
   sub?: string;

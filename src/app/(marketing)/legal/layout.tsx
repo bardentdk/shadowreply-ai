@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import Link from 'next/link';
 
 const LEGAL_LINKS = [
@@ -8,7 +9,7 @@ const LEGAL_LINKS = [
   { href: '/legal/cookies', label: 'Cookies' },
 ];
 
-export default function LegalLayout({ children }: { children: React.ReactNode }) {
+export default function LegalLayout({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">
       {/* Navigation légale */}

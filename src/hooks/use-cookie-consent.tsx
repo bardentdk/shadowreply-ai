@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import { useState, useEffect, useCallback, createContext, useContext, type ReactNode } from 'react';
 
 export type CookieCategory = 'essential' | 'analytics' | 'marketing';
 
@@ -48,13 +48,11 @@ interface CookieConsentContextValue {
 
 const CookieConsentContext = createContext<CookieConsentContextValue | null>(null);
 
-export function CookieConsentProvider({ children }: { children: React.ReactNode }) {
+export function CookieConsentProvider({ children }: { children: ReactNode }) {
   const [consent, setConsent] = useState<CookieConsent>(DEFAULT_CONSENT);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setConsent(readFromStorage());
-    setMounted(true);
   }, []);
 
   const save = useCallback((next: CookieConsent) => {
@@ -75,11 +73,9 @@ export function CookieConsentProvider({ children }: { children: React.ReactNode 
   }, [save]);
 
   const reset = useCallback(() => {
-    localStorage.removeItem(STORAGE_KEY);
+    if (typeof window !== 'undefined') localStorage.removeItem(STORAGE_KEY);
     setConsent(DEFAULT_CONSENT);
   }, []);
-
-  if (!mounted) return <>{children}</>;
 
   return (
     <CookieConsentContext.Provider value={{ consent, acceptAll, rejectAll, saveCustom, reset }}>
@@ -93,3 +89,4 @@ export function useCookieConsent(): CookieConsentContextValue {
   if (!ctx) throw new Error('useCookieConsent must be used inside CookieConsentProvider');
   return ctx;
 }
+
