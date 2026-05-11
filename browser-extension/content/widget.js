@@ -2,11 +2,11 @@
 (function () {
   'use strict';
 
-  const APP_URL = 'https://shadowreply-ai.vercel.app';
+  const APP_URL = 'https://airepl.vercel.app';
   const STORAGE_KEY = 'sr_widget_hidden';
 
   // Don't inject on shadowreply.ai itself
-  if (location.hostname.includes('shadowreply-ai.vercel.app')) return;
+  if (location.hostname.includes('airepl.vercel.app')) return;
   // Don't double-inject
   if (document.getElementById('shadowreply-widget-host')) return;
 
