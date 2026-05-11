@@ -8,7 +8,8 @@
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
+
+    <!-- Header (always visible) -->
     <div class="header">
       <div class="logo">
         <div class="logo-icon">
@@ -24,71 +25,102 @@
       <div id="status-badge" class="status-badge status-free">Gratuit</div>
     </div>
 
-    <!-- Selected text action -->
-    <div id="selection-section" class="selection-section hidden">
-      <p class="selection-label">Texte sélectionné</p>
-      <p id="selection-preview" class="selection-preview"></p>
-      <div class="action-buttons">
-        <button class="btn btn-primary" id="btn-analyze">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          Analyser ce message
-        </button>
-        <button class="btn btn-secondary" id="btn-generate">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-          </svg>
-          Générer des réponses
-        </button>
-      </div>
-    </div>
+    <!-- VIEW: Form (default) -->
+    <div id="view-main" class="view">
 
-    <!-- Quick actions -->
-    <div class="quick-actions">
-      <p class="section-title">Actions rapides</p>
-      <div class="action-list">
-        <a class="action-item" data-url="dashboard">
-          <div class="action-icon">⚡</div>
-          <div class="action-info">
-            <p class="action-name">Générer une réponse</p>
-            <p class="action-desc">3 styles stratégiques en 3 secondes</p>
-          </div>
-        </a>
-        <a class="action-item" data-url="analyze">
-          <div class="action-icon">🔍</div>
-          <div class="action-info">
-            <p class="action-name">Analyser un message</p>
-            <p class="action-desc">Décrypter l'intention et le ton</p>
-          </div>
-        </a>
-        <a class="action-item" data-url="reformulate">
-          <div class="action-icon">✍️</div>
-          <div class="action-info">
-            <p class="action-name">Reformuler un brouillon</p>
-            <p class="action-desc">Optimiser ce que tu veux écrire</p>
-          </div>
-        </a>
-        <a class="action-item" data-url="templates">
-          <div class="action-icon">📚</div>
-          <div class="action-info">
-            <p class="action-name">Templates</p>
-            <p class="action-desc">43 scénarios prêts à l'emploi</p>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <a id="open-app" class="open-app-btn" href="#">
-        Ouvrir ShadowReply AI
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-          <polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/>
+      <!-- Selected text indicator -->
+      <div id="selection-indicator" class="selection-indicator hidden">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="sel-icon">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14,2 14,8 20,8"/>
         </svg>
-      </a>
+        <span class="sel-label">Texte sélectionné ·</span>
+        <span id="sel-preview" class="sel-preview"></span>
+        <button id="sel-clear" class="sel-clear" title="Effacer">✕</button>
+      </div>
+
+      <!-- Generation form -->
+      <div class="form-section">
+        <label class="form-label" for="message-input">Message reçu</label>
+        <textarea
+          id="message-input"
+          class="form-textarea"
+          placeholder="Colle ici le message auquel tu veux répondre…"
+          rows="4"
+        ></textarea>
+
+        <label class="form-label" for="mode-select">Mode de communication</label>
+        <select id="mode-select" class="form-select">
+          <option value="dating">💘 Dating</option>
+          <option value="business">💼 Professionnel</option>
+          <option value="friendly" selected>😊 Amical</option>
+          <option value="conflict">⚡ Conflit / Tension</option>
+          <option value="cold_polite">🧊 Formel froid</option>
+          <option value="follow_up">📬 Relance</option>
+          <option value="apology">🙏 Excuse</option>
+          <option value="negotiation">🤝 Négociation</option>
+        </select>
+
+        <div id="error-banner" class="error-banner hidden"></div>
+
+        <button id="btn-generate" class="btn btn-primary btn-full">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+          </svg>
+          Générer 3 réponses
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <a id="open-app" href="#" class="open-app-btn">
+          Ouvrir ShadowReply AI
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
     </div>
+
+    <!-- VIEW: Results -->
+    <div id="view-results" class="view hidden">
+
+      <div class="results-header">
+        <button id="btn-back" class="btn-back">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M19 12H5M12 5l-7 7 7 7"/>
+          </svg>
+          Retour
+        </button>
+        <p class="results-title">3 réponses stratégiques</p>
+      </div>
+
+      <div id="replies-container" class="replies-container"></div>
+
+      <div class="results-hint hidden" id="no-inject-hint">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Clique dans un champ texte avant d'utiliser "Insérer"
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <a id="open-app-results" href="#" class="open-app-btn">
+          Voir dans l'application
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15,3 21,3 21,9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
   </div>
   <script src="popup.js"></script>
 </body>
