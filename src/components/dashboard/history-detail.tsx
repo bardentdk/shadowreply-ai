@@ -52,13 +52,14 @@ export function HistoryDetail({ generationId, onClose }: HistoryDetailProps) {
   const mode = generation
     ? COMMUNICATION_MODES.find((m) => m.id === generation.mode)
     : null;
+  const ModeIcon = mode?.icon;
 
   return (
     <Dialog
       open={!!generationId}
       onClose={onClose}
       size="xl"
-      title={mode ? `${mode.icon} Réponse en mode ${mode.label}` : 'Détails'}
+      title={mode ? `Réponse en mode ${mode.label}` : 'Détails'}
       description={
         generation
           ? `Générée ${formatRelativeDate(generation.created_at).toLowerCase()}`
@@ -114,7 +115,7 @@ export function HistoryDetail({ generationId, onClose }: HistoryDetailProps) {
             <div className="flex flex-wrap items-center gap-2 border-t border-white/5 pt-4">
               {mode && (
                 <Badge variant="primary">
-                  <span aria-hidden>{mode.icon}</span>
+                  {ModeIcon && <ModeIcon aria-hidden className="h-3 w-3" />}
                   {mode.label}
                 </Badge>
               )}
